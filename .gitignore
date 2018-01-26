@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# c9
+.c9/
+
+# Build
+dist/
