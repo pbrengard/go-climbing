@@ -40,41 +40,6 @@ class SignUpPanel extends React.Component {
     
   };
   
-  signup = () => {
-    if (!this.user_value) {
-      return this.setState({error_name: true});
-    }
-    if (!this.email_value) {
-      return this.setState({error_email: true});
-    }
-    if (!this.passwd_value) {
-      return this.setState({error_passwd: true});
-    }
-    
-    fetch('/auth/signup', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        displayname: this.user_value,
-        username: this.email_value,
-        password: this.passwd_value,
-      }),
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      if (responseJson.result == 'error') {
-        this.setState({ error: responseJson.error.message });
-      } else {
-        
-      }
-    })
-    .catch((error) => {
-      this.setState({ error: error });
-    });
-  }
   
   render() {
     const { classes } = this.props;
@@ -86,33 +51,13 @@ class SignUpPanel extends React.Component {
           </Typography>
           
           <div className={classes.container}>
-            <TextField required error={this.state.error_name} onChange={e => {this.user_value = e.target.value}}
-              className={classes.input}
-              label="Nom d'utilisateur"
-            />
-            <TextField required error={this.state.error_email} onChange={e => {this.email_value = e.target.value}}
-              className={classes.input}
-              type="email"
-              autoComplete="email"
-              label='adresse e-mail'
-            />
-            <TextField required error={this.state.error_passwd} onChange={e => {this.passwd_value = e.target.value}}
-              className={classes.input}
-              type="password"
-              autoComplete="current-password"
-              label='Mot de passe'
-            />
-            {this.state.error ?
-              <Typography component="p" className={classes.error} color='error' >
-                {this.state.error}
-              </Typography>
-              :
+            
               <Typography component="p" className={classes.disclaimer} >
                 go-climbing n'utilisera votre adresse e-mail que pour les besoins du site, et ne la partagera ou vendra pas à d'autres entités.
               </Typography>
-            }
-            <Button onClick={this.signup} raised color="primary">
-              Inscription
+           
+            <Button href="/auth/google" raised color="primary">
+              Connexion avec Google
             </Button>
           </div>
         </Paper>

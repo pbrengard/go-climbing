@@ -66,30 +66,6 @@ class SignInDialog extends React.Component {
     });
   };
   
-  googleLogin = () => {
-    fetch('/auth/google', {
-      method: 'GET',
-      mode: "no-cors",
-      headers: {
-        'Access-Control-Allow-Origin': "*",
-        'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE',  
-        'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token'
-      },
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      if (responseJson.result == 'error') {
-        this.setState({ error: responseJson.error.message });
-      } else {
-        close();
-      }
-    })
-    .catch((error) => {
-      this.setState({ error: error });
-    });
-    
-  };
-
   render() {
     const { classes } = this.props;
     
@@ -100,48 +76,7 @@ class SignInDialog extends React.Component {
           aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">Connexion</DialogTitle>
-          <DialogContent>
-            {this.state.error ?
-            <DialogContentText style={{color: 'red'}}>
-              {this.state.error}
-            </DialogContentText>
-            :
-            <DialogContentText>
-              Entrez e-mail et mot de passe
-            </DialogContentText>
-            }
-          <FormControl className={classes.container}>
-            <Input onChange={e => {this.user_value = e.target.value}}
-              placeholder="Adresse e-mail"
-              className={classes.input}
-              type="email"
-              autoComplete="email"
-              inputProps={{
-                'aria-label': 'E-mail',
-              }}
-            />
-            <Input onChange={e => {this.passwd_value = e.target.value}}
-              placeholder="Mot de passe"
-              className={classes.input}
-              type="password"
-              autoComplete="current-password"
-              inputProps={{
-                'aria-label': 'Mot de passe',
-              }}
-            />
-          </FormControl>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.close} raised color="primary">
-              Annuler
-            </Button>
-            <Button onClick={this.signin} raised color="primary">
-              OK
-            </Button>
-          </DialogActions>
-          <Typography type="headline" component="h3" align="center">
-            - ou -
-          </Typography>
+          
           <Button href="/auth/google" raised color="primary" className={classes.other_button}>
               Connexion avec Google
           </Button>

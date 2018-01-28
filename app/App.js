@@ -14,6 +14,9 @@ import FaceIcon from 'material-ui-icons/Face';
 import SignInDialog from './SignInDialog';
 import SignUpPanel from './SignUpPanel';
 import ProgressionPanel from './ProgressionPanel';
+import ChallengePanel from './ChallengePanel';
+import BuddiesPanel from './BuddiesPanel';
+
 
 const styles = theme => ({
   app: {
@@ -26,14 +29,14 @@ const styles = theme => ({
     margin: theme.spacing.unit,
   },
   avatar: {
-    backgroundColor: theme.palette.primary[500],
-    color: theme.palette.background.paper
+    backgroundColor: theme.palette.background.canvasColor,
+    cursor: 'pointer'
   },
 });
 
 class App extends React.Component {
   state = {
-    active_tab: 0,
+    active_tab: 1,
     user_info: null,
     open_avatar_menu: false,
     anchorEl: null,
@@ -84,16 +87,8 @@ class App extends React.Component {
       <Button color="inherit" onClick={this.handleClickSignIn}>
         {'Connexion'}
       </Button> :
-      <Avatar className={classes.avatar}>
-        <Button 
-          aria-haspopup="true"
-          aria-owns={this.state.openAvatarMenu ? 'avatar-menu' : null}
-          className={classes.avatar}
-          onClick={this.handleClickAvatar}
-          type="title"
-        >
-          <FaceIcon />
-        </Button>
+      <Avatar className={classes.avatar} src={this.state.user_info.picture} alt={this.state.user_info.displayName} onClick={this.handleClickSignIn}>
+        {this.state.user_info.picture ? '' : <FaceIcon /> }
       </Avatar>
       ;
     
@@ -101,6 +96,11 @@ class App extends React.Component {
       <SignUpPanel /> :
       <ProgressionPanel />
       ;
+    const challengePanel = !this.state.user_info ?
+      <SignUpPanel /> :
+      <ChallengePanel />
+      ;
+    const buddiesPanel = <BuddiesPanel />;
       
     return (
       <div>
@@ -124,8 +124,8 @@ class App extends React.Component {
         <Tab label="Buddies" />
       </Tabs>
       {this.state.active_tab === 0 && progressionPanel}
-      {this.state.active_tab === 1 && progressionPanel}
-      {this.state.active_tab === 2 && progressionPanel}
+      {this.state.active_tab === 1 && challengePanel}
+      {this.state.active_tab === 2 && buddiesPanel}
       
       <SignInDialog innerRef={instance => { this.sign_in_dialog = instance; }}/>
       </div>

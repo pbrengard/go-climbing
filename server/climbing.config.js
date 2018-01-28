@@ -2,9 +2,9 @@ module.exports = {
   difficulties: [ // from easiest to most difficult
     {id: 1, name: 'Novice', color: 'purple[200]'},
     {id: 2, name: 'Débutant', color: 'yellow[400]'},
-    {id: 3, name: 'Débutant', color: 'orange[300]'},
+    {id: 3, name: 'Confirmé', color: 'orange[300]'},
     {id: 4, name: 'Performant', color: 'green[300]'},
-    {id: 5, name: 'Confirmé', color: 'indigo[400]'},
+    {id: 5, name: 'Efficace', color: 'indigo[400]'},
   ]
   
   walls: [

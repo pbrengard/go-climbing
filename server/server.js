@@ -6,7 +6,6 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt')
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const MongoClient = require('mongodb').MongoClient;
 const async = require('async');
@@ -38,25 +37,6 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use('signin', new LocalStrategy(
-  function(username, password, done) {
-    Users.findOne({ username: username }, function(err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      bcrypt.compare(password, user.passwordHash, function (err, isValid) {
-        if (err) {
-          return done(err);
-        }
-        if (!isValid) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
-      });
-    });
-  }
-));
 
 passport.use('google', new GoogleStrategy({
     clientID: config.google.client_id,
@@ -64,56 +44,46 @@ passport.use('google', new GoogleStrategy({
     callbackURL: config.google.redirect_uris[0]
   },
   function(accessToken, refreshToken, profile, done) {
-    //console.log(profile);
+    //console.dir(profile, {depth: null, showHidden: true});
     
     Users.findOne({ id: profile.id }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
-        Users.insert(profile, function(err, inserted) {
+        let new_user = {
+          id: profile.id,
+          displayName: profile.displayName,
+          email: profile.emails[0] ? profile.emails[0].value : null,
+          picture: profile.photos[0] ? profile.photos[0].value : null,
+          gender: profile.gender,
+          provider: 'Google',
+          lang: profile._json && profile._json.language || 'fr',
+        };
+        Users.insert(new_user, function(err2, inserted) {
+          if (err2) {
+            return done(err);
+          }
           return done(null, profile);
         });
       } else {
-        // update !
+        // update ! check etag
         return done(null, user);
       }
     });
-    
-    //return done(null, false, { message: 'Not just yet.' });
   }
 ));
 
 passport.serializeUser(function(user, done) {
-  console.log('serializeUser '+user.id);
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log('deserializeUser ' + id);
   Users.findOne({ id: id }, function(err, user) {
     if (err) {
       console.error(err);
       return done(err, false);
     }
-    console.log(user.displayName);
     done(null, user);
   });
-});
-
-app.post('/auth/signin', function(req, res, next) {
-  console.log("signing in "+req.body.username);
-  passport.authenticate('signin', function(err, user, info) {
-    if (err) { return res.send({result: 'error', error: {message: err}}); }
-    if (!user) { return res.send({result: 'error', error: info}); }
-    req.logIn(user, function(err) {
-      if (err) { return res.send({result: 'error', error: err}); }
-      return res.send({result: 'ok', user: user})
-    });
-  })(req, res, next);
-});
-
-app.post('/auth/signup', function(req, res, next) {
-  
-  res.send({result: 'error', error: {message: "not implemented"}});
 });
 
 app.get('/auth/google',
@@ -125,49 +95,41 @@ app.get('/auth/google',
   }
 ));
 
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+          successRedirect : '/',
+          failureRedirect : '/failedgoogleauth'
+}));
+
 app.get('/auth/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
 
-/*
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/googleloginfailed' }), function(req, res) {
-    res.redirect('/');
-});
-*/
-app.get('/auth/google/callback',
-  passport.authenticate('google', {
-          successRedirect : '/',
-          failureRedirect : '/failedgoogleauth'
-  }));
-
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
-  console.log(req.session);
   // if user is authenticated in the session, carry on
   if (req.isAuthenticated())
       return next();
 
   // if they aren't redirect them to the home page
-  res.redirect('/');
-}
-
-function sessionAuth(req, res, next) {
-  return passport.authenticate('session')(req, res, next);
+  res.status(401).send({result:'error', error: {message:'not authenticated'}});
 }
 
 app.get('/auth/userinfo', isLoggedIn, function(req, res) {
     if (!req.user) {
       return res.send({result:'error', error: {message:'no session'}});
     } else {
-      res.send({result:'ok', data: {displayName:req.user.displayName} });
+      res.send({result:'ok', data: {
+            displayName: req.user.displayName,
+            picture: req.user.picture,
+          }
+      });
     }
 });
 
 app.get('/test', function(req, res) {
-  console.log(req.user.displayName);
-  res.send({result: 'ok'})
+  res.send({result: 'ok'});
 });
 
 
@@ -185,7 +147,7 @@ if (isDeveloping) {
   app.use(require('webpack-hot-middleware')(compiler));
 } else {
 */
-  console.log("serving static from " + __dirname)
+  console.log("serving static from " + __dirname);
   app.use(express.static(path.join(__dirname, '../dist')));
   app.get('/', function response(req, res) {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
