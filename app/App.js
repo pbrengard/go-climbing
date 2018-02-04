@@ -87,7 +87,7 @@ class App extends React.Component {
       <Button color="inherit" onClick={this.handleClickSignIn}>
         {'Connexion'}
       </Button> :
-      <Avatar className={classes.avatar} src={this.state.user_info.picture} alt={this.state.user_info.displayName} onClick={this.handleClickSignIn}>
+      <Avatar className={classes.avatar} src={this.state.user_info.picture} alt={this.state.user_info.displayName} onClick={this.handleClickAvatar}>
         {this.state.user_info.picture ? '' : <FaceIcon /> }
       </Avatar>
       ;

@@ -4,13 +4,13 @@ const assert = require('assert');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const MongoClient = require('mongodb').MongoClient;
 const async = require('async');
 
 const config = require("./config");
+const climbing = require("./climbing.config");
 
 
 var db = null;
@@ -56,6 +56,7 @@ passport.use('google', new GoogleStrategy({
           picture: profile.photos[0] ? profile.photos[0].value : null,
           gender: profile.gender,
           provider: 'Google',
+          revoke_app_url: 'https://myaccount.google.com/permissions',
           lang: profile._json && profile._json.language || 'fr',
         };
         Users.insert(new_user, function(err2, inserted) {
@@ -130,6 +131,11 @@ app.get('/auth/userinfo', isLoggedIn, function(req, res) {
 
 app.get('/test', function(req, res) {
   res.send({result: 'ok'});
+});
+
+
+app.get('/walls', function(req, res) {
+  res.send({result: 'ok', data: climbing.walls});
 });
 
 
