@@ -12,6 +12,8 @@ import ExpansionPanel, {
 import Typography from 'material-ui/Typography';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 
+import WallPanel from './WallPanel';
+
 
 const styles = theme => ({
   challenge_panel: {
@@ -75,10 +77,7 @@ class ChallengePanel extends React.Component {
               <Typography className={classes.walldesc}>{wall.description}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Typography>
-                Nulla facilisi. Phasellus sollicitudin nulla et quam mattis feugiat. Aliquam eget
-                maximus est, id dignissim quam.
-              </Typography>
+              <WallPanel />
             </ExpansionPanelDetails>
           </ExpansionPanel>
           })
