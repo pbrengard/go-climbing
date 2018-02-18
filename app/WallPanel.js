@@ -1,6 +1,11 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 
+import Button from 'material-ui/Button';
+import { LinearProgress, CircularProgress } from 'material-ui/Progress';
+
+import AddIcon from 'material-ui-icons/Add';
+
 const create = (type, ...data) => {
   return {
     type,
@@ -29,14 +34,18 @@ const fakeFetch = () => {
 };
 
 const styles = theme => ({
-  
+  button_add: {
+    //position: 'absolute',
+    //top: theme.spacing.unit * 2,
+    //right: theme.spacing.unit * 4,
+  },
 });
 
 class WallPanel extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: remoteData.init() };
-  }
+  state = { 
+    data: remoteData.init()
+  };
+  
   componentDidMount() {
     this.fetch();
   }
@@ -50,26 +59,57 @@ class WallPanel extends React.Component {
       this.setState({ data: remoteData.failure(e) });
     }
   };
+  
+  handleAdd = (user) => () => {
+    console.log(user);
+  }
+  
   render() {
+    const { classes, user } = this.props;
     const { data } = this.state;
+    
+    let add_button = user.is_admin ?
+      <Button variant="fab" mini aria-label="add" className={classes.button_add} color="primary" onClick={this.handleAdd(user)}>
+        <AddIcon />
+      </Button> :
+      '';
     return (
-      <div>
-        <h3>User List</h3>
+      
+        data.fold({
+          NOT_LOADED: () => <div>Not Loaded</div>,
+          LOADING: () => <CircularProgress />,
+          FAILURE: error => <div>An error has happened</div>,
+          SUCCESS: data => {
+            return (
+            <div>
+            {add_button}
+            <ul>
+              {data.map(dat => (
+                <li key={dat.id}>{dat.name}</li>
+              ))}
+            </ul>
+            </div>
+          )},
+        })
+      
+    );
+  }
+}
+
+/*
+<h3>User List</h3>
         {data.fold({
           NOT_LOADED: () => <div>Not Loaded</div>,
           LOADING: () => <div>Loading...</div>,
           FAILURE: error => <div>An error has happened</div>,
           SUCCESS: data => (
             <ul>
-              {data.map(user => (
-                <li key={user.id}>{user.name}</li>
+              {data.map(dat => (
+                <li key={dat.id}>{dat.name}</li>
               ))}
             </ul>
           ),
         })}
-      </div>
-    );
-  }
-}
+*/
 
 export default withStyles(styles)(WallPanel);

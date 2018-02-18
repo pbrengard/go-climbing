@@ -11,18 +11,7 @@ const async = require('async');
 
 const config = require("./config");
 const climbing = require("./climbing.config");
-
-
-var db = null;
-var Users = null;
-MongoClient.connect(config.mongo_url, function(err, client) {
-  assert.equal(null, err);
-  console.log("Connected successfully to MongoDB server");
-
-  db = client.db(config.dbName);
-  Users = db.collection('Users');
-  //client.close();
-});
+var db = require("./mongodb");
 
 const isDeveloping = process.env.NODE_ENV !== 'production';
 const port = process.env.PORT || 3000;
@@ -45,8 +34,7 @@ passport.use('google', new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     //console.dir(profile, {depth: null, showHidden: true});
-    
-    Users.findOne({ id: profile.id }, function (err, user) {
+    db.users().getByID(profile.id, function(err, user) {
       if (err) { return done(err); }
       if (!user) {
         let new_user = {
@@ -55,13 +43,15 @@ passport.use('google', new GoogleStrategy({
           email: profile.emails[0] ? profile.emails[0].value : null,
           picture: profile.photos[0] ? profile.photos[0].value : null,
           gender: profile.gender,
+          birthdate: profile._json.birthday,
           provider: 'Google',
           revoke_app_url: 'https://myaccount.google.com/permissions',
           lang: profile._json && profile._json.language || 'fr',
+          is_admin: true,
         };
-        Users.insert(new_user, function(err2, inserted) {
+        db.users().insert(new_user, function(err2, inserted) {
           if (err2) {
-            return done(err);
+            return done(err2);
           }
           return done(null, profile);
         });
@@ -78,7 +68,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  Users.findOne({ id: id }, function(err, user) {
+  db.users().getByID(id, function(err, user) {
     if (err) {
       console.error(err);
       return done(err, false);
@@ -89,8 +79,9 @@ passport.deserializeUser(function(id, done) {
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: [
-      'profile',
-      'email'
+      //'profile',
+      'email',
+      'https://www.googleapis.com/auth/plus.login'
       //'https://www.googleapis.com/auth/plus.login'
     ]
   }
@@ -124,6 +115,7 @@ app.get('/auth/userinfo', isLoggedIn, function(req, res) {
       res.send({result:'ok', data: {
             displayName: req.user.displayName,
             picture: req.user.picture,
+            is_admin: true,//req.user.is_admin,
           }
       });
     }

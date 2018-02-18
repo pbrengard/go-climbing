@@ -65,7 +65,7 @@ class ChallengePanel extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, user } = this.props;
     const { expanded, walls } = this.state;
 
     return (
@@ -77,7 +77,8 @@ class ChallengePanel extends React.Component {
               <Typography className={classes.walldesc}>{wall.description}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <WallPanel />
+              { expanded === wall.id ?
+                <WallPanel wall_id={wall.id} user={user}/> : "" }
             </ExpansionPanelDetails>
           </ExpansionPanel>
           })

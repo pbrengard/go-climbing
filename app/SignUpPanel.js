@@ -46,17 +46,17 @@ class SignUpPanel extends React.Component {
     
     return (
         <Paper className={classes.panel} elevation={4}>
-          <Typography type="headline" component="h3">
+          <Typography variant="headline">
             Créer un compte
           </Typography>
           
           <div className={classes.container}>
             
-              <Typography component="p" className={classes.disclaimer} >
+              <Typography className={classes.disclaimer} >
                 go-climbing n'utilisera votre adresse e-mail que pour les besoins du site, et ne la partagera ou vendra pas à d'autres entités.
               </Typography>
            
-            <Button href="/auth/google" raised color="primary">
+            <Button variant="raised" color="primary" href="/auth/google">
               Connexion avec Google
             </Button>
           </div>

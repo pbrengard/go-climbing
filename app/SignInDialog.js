@@ -77,7 +77,7 @@ class SignInDialog extends React.Component {
         >
           <DialogTitle id="form-dialog-title">Connexion</DialogTitle>
           
-          <Button href="/auth/google" raised color="primary" className={classes.other_button}>
+          <Button href="/auth/google" variant="raised" color="primary" className={classes.other_button}>
               Connexion avec Google
           </Button>
         </Dialog>

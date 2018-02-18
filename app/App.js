@@ -7,6 +7,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Avatar from 'material-ui/Avatar';
+import Paper from 'material-ui/Paper';
 
 import SettingsIcon from 'material-ui-icons/Settings';
 import FaceIcon from 'material-ui-icons/Face';
@@ -32,6 +33,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.canvasColor,
     cursor: 'pointer'
   },
+  bottom: theme.mixins.gutters({
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginTop: theme.spacing.unit * 3,
+  }),
 });
 
 class App extends React.Component {
@@ -98,7 +104,7 @@ class App extends React.Component {
       ;
     const challengePanel = !this.state.user_info ?
       <SignUpPanel /> :
-      <ChallengePanel />
+      <ChallengePanel user={this.state.user_info} />
       ;
     const buddiesPanel = <BuddiesPanel />;
       
@@ -128,6 +134,11 @@ class App extends React.Component {
       {this.state.active_tab === 2 && buddiesPanel}
       
       <SignInDialog innerRef={instance => { this.sign_in_dialog = instance; }}/>
+      <Paper className={classes.bottom} elevation={4}>
+        <Typography component="p" align="center">
+          &copy; Pierre Brengard
+        </Typography>
+      </Paper>
       </div>
     )
   }
