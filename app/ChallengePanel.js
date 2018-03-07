@@ -34,6 +34,7 @@ class ChallengePanel extends React.Component {
   state = {
     expanded: null,
     walls: [],
+    grades: [],
   };
   
   componentDidMount = () => {
@@ -51,6 +52,25 @@ class ChallengePanel extends React.Component {
         console.log(responseJson.error);
       } else {
         this.setState({walls: responseJson.data});
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    fetch('/grades', {
+      method: 'GET',
+      credentials: "same-origin",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      if (responseJson.result == 'error') {
+        console.log(responseJson.error);
+      } else {
+        this.setState({grades: responseJson.data});
       }
     })
     .catch((error) => {
@@ -78,7 +98,7 @@ class ChallengePanel extends React.Component {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               { expanded === wall.id ?
-                <WallPanel wall_id={wall.id} user={user}/> : "" }
+                <WallPanel wall_id={wall.id} user={user} walls={this.state.walls} grades={this.state.grades} /> : "" }
             </ExpansionPanelDetails>
           </ExpansionPanel>
           })

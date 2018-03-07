@@ -130,6 +130,83 @@ app.get('/walls', function(req, res) {
   res.send({result: 'ok', data: climbing.walls});
 });
 
+app.get('/grades', function(req, res) {
+  res.send({result: 'ok', data: climbing.grades});
+});
+
+app.get('/routes/:wall_id', isLoggedIn, function(req, res) {
+  db.routes().getAllActiveByWallID(Number(req.params.wall_id), function(err, routes) {
+    if (err) {
+      res.send({result: 'error', error: err});
+    } else {
+      async.forEachOf(routes, function(r, key, next) {
+        db.passed().getByID(r._id, req.user.id, function(err2, p) {
+          if (err2) return next(err2);
+          routes[key].passed = p;
+          return next();
+        });
+        
+        
+      }, function(err) {
+      // if any of the file processing produced an error, err would equal that error
+      if( err ) {
+        // One of the iterations produced an error.
+        // All processing will now stop.
+        res.send({result: 'error', error: err});
+      } else {
+        res.send({result: 'ok', data: routes});
+      }
+    });
+      
+    }
+  });
+});
+
+app.post('/routes/add', isLoggedIn, function(req, res) {
+  let new_route = req.body;
+  new_route.date_closed = null;
+  new_route.closed_by = "";
+  db.routes().insert(new_route, function(err) {
+    if (err) {
+      res.send({result: 'error', error: err});
+    } else {
+      res.send({result: 'ok', data: "route added"});
+    }
+  });
+});
+
+app.post('/routes/close', isLoggedIn, function(req, res) {
+  let route_id = req.body.route;
+  db.routes().close(route_id, new Date(), req.user.displayName, function(err) {
+    if (err) {
+      res.send({result: 'error', error: err});
+    } else {
+      res.send({result: 'ok', data: "route closed"});
+    }
+  });
+});
+
+app.post('/routes/pass', isLoggedIn, function(req, res) {
+  let route_id = req.body.route;
+  let passed = req.body.passed;
+  if (passed) {
+    db.passed().insert(route_id, req.user.id, function(err) {
+      if (err) {
+        res.send({result: 'error', error: err});
+      } else {
+        res.send({result: 'ok', data: "route marked as passed"});
+      }
+    });
+  } else {
+    db.passed().remove(route_id, req.user.id, function(err) {
+      if (err) {
+        res.send({result: 'error', error: err});
+      } else {
+        res.send({result: 'ok', data: "undo route marked as passed"});
+      }
+    });
+  }
+});
 
 /*
 if (isDeveloping) {

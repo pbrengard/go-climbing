@@ -112,7 +112,7 @@ class App extends React.Component {
       <div>
       <AppBar position="static">
         <Toolbar>
-          <Typography type="title" color="inherit" className={classes.flex}>
+          <Typography variant="display1" color="inherit" className={classes.flex}>
             go-climbing
           </Typography>
           {signinButton}
