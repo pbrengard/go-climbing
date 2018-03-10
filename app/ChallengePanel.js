@@ -91,7 +91,7 @@ class ChallengePanel extends React.Component {
     return (
       <div className={classes.challenge_panel}>
         {walls.map( (wall) => {
-          return <ExpansionPanel expanded={expanded === wall.id} onChange={this.handleChange(wall.id)}>
+          return <ExpansionPanel key={wall.id} expanded={expanded === wall.id} onChange={this.handleChange(wall.id)}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
               <Typography className={classes.wallname}>{wall.name}</Typography>
               <Typography className={classes.walldesc}>{wall.description}</Typography>

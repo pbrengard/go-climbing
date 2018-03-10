@@ -1,11 +1,16 @@
 module.exports = {
   grades: [ // from easiest to most difficult
-    {id: 0, name: 'Non coté',   color: '#BDBDBD'},
-    {id: 1, name: 'Novice',     color: '#F8BBD0'},
-    {id: 2, name: 'Débutant',   color: '#FFF176'},
-    {id: 3, name: 'Confirmé',   color: '#FFB74D'},
-    {id: 4, name: 'Performant', color: '#66BB6A'},
-    {id: 5, name: 'Efficace',   color: '#5C6BC0'},
+    {id: 0, name: 'Non coté',           color: '#BDBDBD', points: 0},
+    {id: 1, name: 'Novice',             color: '#FFEB3B', points: 1},
+    {id: 2, name: 'Débutant',           color: '#FFA726', points: 2},
+    {id: 3, name: 'Début de Performant',color: '#CDDC39', points: 3},
+    {id: 4, name: 'Performant',         color: '#4CAF50', points: 4},
+    {id: 5, name: 'Performant confirmé',color: '#009688', points: 6},
+    {id: 6, name: 'Confirmé',           color: '#2196F3', points: 8},
+    {id: 7, name: 'Confirmé expert',    color: '#9C27B0', points: 12},
+    {id: 8, name: 'Expert',             color: '#f44336', points: 16},
+    {id: 9, name: 'Maître',             color: '#FFFFFF', points: 32},
+    {id:10, name: 'Mutant',             color: '#263238', points: 64},
   ],
   
   walls: [

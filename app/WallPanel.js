@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from 'material-ui/styles';
 
 import Button from 'material-ui/Button';
-import { LinearProgress, CircularProgress } from 'material-ui/Progress';
+import { CircularProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
 import Dialog, {
   DialogActions,
@@ -94,7 +94,7 @@ class WallPanel extends React.Component {
     }).then((response) => response.json())
     .then((responseJson) => {
       if (responseJson.result == 'error') {
-        console.log(responseJson.error);
+        console.error(responseJson.error);
         this.setState({ dialog_add_snack_open: true, dialog_add_snack_text : responseJson.error.message });
         return { data: [] };
       } else {
@@ -102,7 +102,7 @@ class WallPanel extends React.Component {
       }
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
       this.setState({ dialog_add_snack_open: true, dialog_add_snack_text : error });
     });
   }
@@ -308,7 +308,7 @@ class WallPanel extends React.Component {
               }}
             />
           
-          <FormControl required fullWidth margin="dense" className={classes.formControl}>
+          <FormControl required fullWidth margin="dense" className={classes.formControl} >
             <InputLabel htmlFor="wall-id">Pan</InputLabel>
             <Select
               value={this.state.dialog_add_data.wall_id}
@@ -320,7 +320,7 @@ class WallPanel extends React.Component {
               }}
             >
               {walls.map( (wall) => {
-                return <MenuItem value={wall.id}>{wall.name}</MenuItem>
+                return <MenuItem value={wall.id} key={wall.id} >{wall.name}</MenuItem>
               })}
             </Select>
           </FormControl>
@@ -338,7 +338,7 @@ class WallPanel extends React.Component {
               style={{backgroundColor: grades[this.state.dialog_add_data.grade_id].color}}
             >
               {grades.map( (grade) => {
-                return <MenuItem style={{backgroundColor: grade.color}} value={grade.id}>{grade.name}</MenuItem>
+                return <MenuItem style={{backgroundColor: grade.color}} value={grade.id} key={grade.id} >{grade.name}</MenuItem>
               })}
             </Select>
           </FormControl>

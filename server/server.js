@@ -208,6 +208,57 @@ app.post('/routes/pass', isLoggedIn, function(req, res) {
   }
 });
 
+
+app.get('/ranking', function(req, res) {
+  /*
+    id
+    displayName
+    points
+    category
+  */
+  async.parallel([
+    function(callback) {
+        db.routes().getAllActive(function(err, routes) {
+          if (err) return callback(err);
+          return callback(null, routes);
+        });
+    },
+    function(callback) {
+        db.users().getAll(function(err, users) {
+          if (err) return callback(err);
+          return callback(null, users);
+        });
+    }
+  ],
+  // optional callback
+  function(err, results) {
+      // the results array will equal ['one','two'] even though
+      // the second function had a shorter timeout.
+      if (err) {
+        res.send({result: 'error', error: err});
+      } else {
+        const routes = results[0];
+        const users = results[1];
+        let ranking = [];
+        
+        for (let ui in users) {
+          const user = users[ui];
+          let entry = {
+            id: user.id,
+            displayName: user.displayName,
+            picture: user.picture,
+            points: ui,
+            category: "Moule",
+          };
+          ranking.push(entry);
+        }
+        
+        res.send({result: 'ok', data: ranking});
+      }
+  });
+});
+
+
 /*
 if (isDeveloping) {
   let webpack = require('webpack'),

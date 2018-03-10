@@ -136,7 +136,7 @@ class App extends React.Component {
       <SignInDialog innerRef={instance => { this.sign_in_dialog = instance; }}/>
       <Paper className={classes.bottom} elevation={4}>
         <Typography component="p" align="center">
-          &copy; Pierre Brengard
+          go-climbing &copy; Pierre Brengard
         </Typography>
       </Paper>
       </div>

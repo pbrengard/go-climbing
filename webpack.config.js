@@ -22,15 +22,15 @@ var config = {
         loader : 'babel-loader',
         query: {
           "presets": ["react", "env"],
-          "plugins": ["transform-runtime", "transform-class-properties"]
+          "plugins": [["transform-runtime", {"polyfill": false}], "transform-class-properties"]
         }
       }
-    ]
+    ],
   },
   output: {
     path: BUILD_DIR,
     filename: '[name].js'
-  }
+  },
 };
 
 module.exports = config;

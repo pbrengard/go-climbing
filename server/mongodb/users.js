@@ -21,6 +21,13 @@ Users.prototype.getByID = function (id, next) {
   });
 };
 
+Users.prototype.getAll = function (next) {
+  this.Users_col.find({}).toArray(function (err, users) {
+    if (err) { return next(err); }
+    return next(null, users);
+  });
+};
+
 Users.prototype.insert = function (new_user, next) {
   this.Users_col.insert(new_user, function(err, inserted) {
     if (err) {

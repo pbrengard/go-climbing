@@ -4,7 +4,7 @@
   "description": "Climbing going social",
   "license": "AGPL-3.0",
   "main": "server/server.js",
-  "repository": "",
+  "repository": "git@github.com:pbrengard/go-climbing.git",
   "author": "Pierre Brengard <pierre@brengard.fr>",
   "scripts": {
     "build": "webpack --progress -p",
@@ -16,8 +16,10 @@
     "async": "^2.6.0",
     "material-ui": "^1.0.0-beta.35",
     "material-ui-icons": "^1.0.0-beta.35",
+    "plotly.js": "^1.35.0",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "react-plotly.js": "^1.7.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

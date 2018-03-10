@@ -22,6 +22,14 @@ Routes.prototype.getByID = function (id, next) {
   });
 };
 
+Routes.prototype.getAllActive = function (next) {
+  let now = new Date();
+  this.Routes_col.find({ date_closed: { $in: [undefined, null] } }).toArray(function(err, routes) {
+    if (err) { return next(err); }
+    return next(null, routes);
+  });
+};
+
 Routes.prototype.getAllActiveByWallID = function (wid, next) {
   let now = new Date();
   this.Routes_col.find({ wall_id: wid, date_closed: { $in: [undefined, null] } }).toArray(function(err, routes) {
