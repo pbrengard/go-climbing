@@ -2,8 +2,8 @@ module.exports = {
   grades: [ // from easiest to most difficult
     {id: 0, name: 'Non coté',           color: '#BDBDBD', points: 0},
     {id: 1, name: 'Novice',             color: '#FFEB3B', points: 1},
-    {id: 2, name: 'Débutant',           color: '#FFA726', points: 2},
-    {id: 3, name: 'Début de Performant',color: '#CDDC39', points: 3},
+    {id: 2, name: 'Débutant',           color: '#FF9800', points: 2},
+    {id: 3, name: 'Début de Performant',color: '#8BC34A', points: 3},
     {id: 4, name: 'Performant',         color: '#4CAF50', points: 4},
     {id: 5, name: 'Performant confirmé',color: '#009688', points: 6},
     {id: 6, name: 'Confirmé',           color: '#2196F3', points: 8},

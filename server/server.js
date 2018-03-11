@@ -208,6 +208,15 @@ app.post('/routes/pass', isLoggedIn, function(req, res) {
   }
 });
 
+var computeRank = (routes) => (user, next) => {
+  return next(null, {
+            id: user.id,
+            displayName: user.displayName,
+            picture: user.picture,
+            points: 1,
+            category: "Moule",
+          });
+}
 
 app.get('/ranking', function(req, res) {
   /*
@@ -239,21 +248,15 @@ app.get('/ranking', function(req, res) {
       } else {
         const routes = results[0];
         const users = results[1];
-        let ranking = [];
         
-        for (let ui in users) {
-          const user = users[ui];
-          let entry = {
-            id: user.id,
-            displayName: user.displayName,
-            picture: user.picture,
-            points: ui,
-            category: "Moule",
-          };
-          ranking.push(entry);
-        }
+        async.map(users, computeRank(routes), function(err, ranking) {
+          if (err) {
+            res.send({result: 'error', error: err});
+          } else {
+            res.send({result: 'ok', data: ranking});
+          }
+        })
         
-        res.send({result: 'ok', data: ranking});
       }
   });
 });

@@ -146,7 +146,7 @@ class WallPanel extends React.Component {
       this.setState({ dialog_add_snack_open: true, dialog_add_snack_text : "Pas de pan" });
       return false;
     }
-    if (d.wall_id == 0) {
+    if (d.grade_id == 0) {
       this.setState({ dialog_add_snack_open: true, dialog_add_snack_text : "Pas de difficulté" });
       return false;
     }
@@ -155,6 +155,7 @@ class WallPanel extends React.Component {
   
   addNewRoute = () => {
     if( !this.validateAddedBloc()) {
+      console.error("Invalid route");
       return;
     }
     fetch('/routes/add', {
