@@ -44,4 +44,44 @@ Passed.prototype.remove = function (route_id, user_id, next) {
    });
 };
 
+Passed.prototype.latest = function(limit, next) {
+  this.Passed_col.aggregate([
+      { $lookup:
+        {
+          from: "Routes",
+          localField: "_id.route_id",
+          foreignField: "_id",
+          as: "routeinfo"
+        }
+      },
+      { $lookup:
+        {
+          from: "Users",
+          localField: "_id.user_id",
+          foreignField: "id",
+          as: "userinfo"
+        }
+      },
+      { "$sort": { "date_passed": -1 } },
+      { "$limit": limit },
+      { "$unwind": "$routeinfo" },
+      { "$unwind": "$userinfo" },
+  ]
+  , function(err, cursor) {
+    if (err) return next(err);
+    
+    /*
+    cursor.get(function(err, res) {
+      console.log(res) 
+    })*/
+    
+    //console.dir(cursor[0]);
+    cursor.toArray(function(err2, results) {
+      if (err2) return next(err2);
+      //console.log(results);
+      return next(null, results);
+    });
+  });
+};
+
 module.exports = Passed;

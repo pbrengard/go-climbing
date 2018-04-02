@@ -208,15 +208,40 @@ app.post('/routes/pass', isLoggedIn, function(req, res) {
   }
 });
 
+
+
+var grades_map = [];
+climbing.grades.forEach(g => {grades_map[g.id] = g});
+
+var walls_map = [];
+climbing.walls.forEach(g => {walls_map[g.id] = g});
+
+
+var getPoints = (user) => (route, next) => {
+  db.passed().getByID(route._id, user.id, function(err, p) {
+    if (err) {
+      console.log(err);
+      return next(err, 0);
+    } else {
+      return next(null, p ? grades_map[route.grade_id].points : 0);
+    }
+  });
+};
+
 var computeRank = (routes) => (user, next) => {
-  return next(null, {
-            id: user.id,
-            displayName: user.displayName,
-            picture: user.picture,
-            points: 1,
-            category: "Moule",
-          });
-}
+  
+  async.map(routes, getPoints(user), function(err, points) {
+    if (err) return next(err);
+    //console.log(points);
+    return next(null, {
+              id: user.id,
+              displayName: user.displayName,
+              picture: user.picture,
+              points: points.reduce((sum, val) => sum + val),
+              category: "Moule",
+            });
+  });
+};
 
 app.get('/ranking', function(req, res) {
   /*
@@ -253,7 +278,7 @@ app.get('/ranking', function(req, res) {
           if (err) {
             res.send({result: 'error', error: err});
           } else {
-            res.send({result: 'ok', data: ranking});
+            res.send({result: 'ok', data: ranking.sort((a,b) => b.points - a.points)});
           }
         })
         
@@ -261,6 +286,36 @@ app.get('/ranking', function(req, res) {
   });
 });
 
+app.get('/latest', function(req, res) {
+  db.passed().latest(15, function(err, results) {
+    if (err) {
+      res.send({result: 'error', error: err});
+    } else {
+      
+      let arr = results.map(function(obj) {return {
+        user_id: obj.userinfo.id,
+        picture: obj.userinfo.picture,
+        displayName:  obj.userinfo.displayName,
+        wall_id: obj.routeinfo.wall_id,
+        wallname: walls_map[obj.routeinfo.wall_id].name,
+        color: obj.routeinfo.color,
+        grade_id: obj.routeinfo.grade_id,
+        gradename: grades_map[obj.routeinfo.grade_id].name,
+        gradecolor: grades_map[obj.routeinfo.grade_id].color,
+        date_passed: obj.date_passed,
+      }; 
+      });
+      
+      res.send({result: 'ok', data: arr});
+    }
+  });
+  /*
+  res.send({result: 'ok', data: [
+    {user_id: 111111, picture: '', displayName: 'Toto', wallname: 'Devers', color: 'Rose', gradename: 'Débutant', gradecolor: '#FF9800'}
+    ]
+  });
+  */
+});
 
 /*
 if (isDeveloping) {

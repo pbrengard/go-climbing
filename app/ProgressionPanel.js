@@ -1,3 +1,5 @@
+/* global Plotly:true */
+
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -6,7 +8,10 @@ import Input from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
-import Plot from 'react-plotly.js'
+
+import createPlotlyComponent from 'react-plotly.js/factory';
+const Plot = createPlotlyComponent(Plotly);
+
 
 const styles = theme => ({
   panel: theme.mixins.gutters({

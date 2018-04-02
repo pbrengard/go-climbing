@@ -21,10 +21,15 @@ import FaceIcon from 'material-ui-icons/Face';
 
 
 const styles = theme => ({
+  grid: {
+    width: '100%',
+    margin: 0,
+  },
   panel: theme.mixins.gutters({
-    padding: 16,
+    //padding: 16,
     margin: theme.spacing.unit * 3 + 'px auto',
   }),
+  
 });
 
 class BuddiesPanel extends React.Component {
@@ -36,7 +41,7 @@ class BuddiesPanel extends React.Component {
   };
   
   componentDidMount() {
-    return fetch('/ranking', {
+    fetch('/ranking', {
       method: 'GET',
       credentials: "same-origin",
       headers: {
@@ -56,13 +61,34 @@ class BuddiesPanel extends React.Component {
       console.error(error);
       this.setState( { ranking_data_loaded: true, ranking_data: [] } );
     });
+    
+    fetch('/latest', {
+      method: 'GET',
+      credentials: "same-origin",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => response.json())
+    .then((responseJson) => {
+      if (responseJson.result == 'error') {
+        console.error(responseJson.error);
+        this.setState( { latest_events_loaded: true, latest_events: [] } );
+      } else {
+        this.setState( { latest_events_loaded: true, latest_events: responseJson.data } );
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      this.setState( { latest_events_loaded: true, latest_events: [] } );
+    });
   }
 
   render() {
     const { classes } = this.props;
     
     return (
-      <Grid container spacing={24}>
+      <Grid container spacing={24} className={classes.grid}>
         <Grid item xs>
           <Paper className={classes.panel} elevation={4}>
             <Typography variant="title" align="center">
@@ -107,20 +133,25 @@ class BuddiesPanel extends React.Component {
             </Typography>
           
             { this.state.latest_events_loaded ?
-              <List>
-                <ListItem button>
-                  <ListItemAvatar>
-                    <Avatar />
-                  </ListItemAvatar>
-                  <ListItemText inset primary="Chelsea Otakan" />
-                </ListItem>
-                <ListItem button>
-                  <ListItemAvatar>
-                    <Avatar />
-                  </ListItemAvatar>
-                  <ListItemText inset primary="Eric Hoffman" />
-                </ListItem>
-              </List>
+              <Table className={classes.table}>
+              <TableBody>
+                {this.state.latest_events.map(n => {
+                  return (
+                    <TableRow key={n.id}>
+                      <TableCell>
+                        <Chip avatar={
+                          <Avatar src={n.picture} alt={n.displayName} >
+                            {n.picture ? '' : <FaceIcon /> }
+                          </Avatar>}
+                          label={n.displayName}
+                        /> <Typography style={{display:'inline-block'}} noWrap>a passé le bloc {n.color} </Typography><Typography noWrap style={{display: 'inline-block', backgroundColor: n.gradecolor}}>&nbsp;{n.gradename}&nbsp;</Typography><Typography noWrap style={{display:'inline-block'}}> sur le pan {n.wallname}</Typography>
+                      </TableCell>
+                      
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
             : <CircularProgress />
             }
           </Paper>

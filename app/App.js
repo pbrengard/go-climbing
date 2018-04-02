@@ -1,3 +1,5 @@
+/* global Plotly:true */
+
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 
@@ -5,12 +7,16 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import Tabs, { Tab } from 'material-ui/Tabs';
 import Avatar from 'material-ui/Avatar';
 import Paper from 'material-ui/Paper';
+import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
 
 import SettingsIcon from 'material-ui-icons/Settings';
 import FaceIcon from 'material-ui-icons/Face';
+import ShowChartIcon from 'material-ui-icons/ShowChart';
+import ViewListIcon from 'material-ui-icons/ViewList';
+import PeopleIcon from 'material-ui-icons/People';
+
 
 import SignInDialog from './SignInDialog';
 import SignUpPanel from './SignUpPanel';
@@ -38,14 +44,20 @@ const styles = theme => ({
     paddingBottom: 16,
     marginTop: theme.spacing.unit * 3,
   }),
+  
+  stickToBottom: {
+    width: '100%',
+    position: 'fixed',
+    bottom: 0,
+  },
 });
 
 class App extends React.Component {
   state = {
-    active_tab: 1,
     user_info: null,
     open_avatar_menu: false,
     anchorEl: null,
+    bottom_nav_value: 1,
   };
   
   componentWillMount() {
@@ -74,16 +86,16 @@ class App extends React.Component {
     });
   }
   
-  handleChangeTab = (event, value) => {
-    this.setState({ active_tab: value });
-  };
-  
   handleClickSignIn = (event) => {
     this.sign_in_dialog.show();
   }
   
   handleClickAvatar = (event) => {
     this.setState({ openAvatarMenu: true, anchorEl: event.currentTarget });
+  };
+  
+  handleChangeNav = (event, value) => {
+    this.setState({ bottom_nav_value: value });
   };
   
   render() {
@@ -118,27 +130,24 @@ class App extends React.Component {
           {signinButton}
         </Toolbar>
       </AppBar>
-      <Tabs
-            value={this.state.active_tab}
-            onChange={this.handleChangeTab}
-            indicatorColor="primary"
-            textColor="primary"
-            centered
-      >
-        <Tab label="Progression" />
-        <Tab label="Challenge" />
-        <Tab label="Buddies" />
-      </Tabs>
-      {this.state.active_tab === 0 && progressionPanel}
-      {this.state.active_tab === 1 && challengePanel}
-      {this.state.active_tab === 2 && buddiesPanel}
+      
+      {this.state.bottom_nav_value === 0 && progressionPanel}
+      {this.state.bottom_nav_value === 1 && challengePanel}
+      {this.state.bottom_nav_value === 2 && buddiesPanel}
       
       <SignInDialog innerRef={instance => { this.sign_in_dialog = instance; }}/>
-      <Paper className={classes.bottom} elevation={4}>
-        <Typography component="p" align="center">
-          go-climbing &copy; Pierre Brengard
-        </Typography>
-      </Paper>
+      
+      <BottomNavigation
+        value={this.state.bottom_nav_value}
+        onChange={this.handleChangeNav}
+        showLabels
+        className={classes.stickToBottom}
+      >
+        <BottomNavigationAction label="Progression" icon={<ShowChartIcon />} />
+        <BottomNavigationAction label="Challenge" icon={<ViewListIcon />} />
+        <BottomNavigationAction label="Buddies" icon={<PeopleIcon />} />
+      </BottomNavigation>
+
       </div>
     )
   }
