@@ -7,22 +7,26 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon';
 import Avatar from 'material-ui/Avatar';
-import Paper from 'material-ui/Paper';
+import Menu, { MenuItem } from 'material-ui/Menu';
 import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
+import { Switch } from 'react-router';
+import { HashRouter as Router, Route, Link } from 'react-router-dom';
 
-import SettingsIcon from 'material-ui-icons/Settings';
-import FaceIcon from 'material-ui-icons/Face';
+
 import ShowChartIcon from 'material-ui-icons/ShowChart';
 import ViewListIcon from 'material-ui-icons/ViewList';
 import PeopleIcon from 'material-ui-icons/People';
-
+import KeyboardArrowLeftIcon from 'material-ui-icons/KeyboardArrowLeft';
 
 import SignInDialog from './SignInDialog';
 import SignUpPanel from './SignUpPanel';
 import ProgressionPanel from './ProgressionPanel';
 import ChallengePanel from './ChallengePanel';
 import BuddiesPanel from './BuddiesPanel';
+import ProfilePanel from './ProfilePanel';
+import AvatarMenu from './AvatarMenu';
 
 
 const styles = theme => ({
@@ -34,10 +38,6 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit,
-  },
-  avatar: {
-    backgroundColor: theme.palette.background.canvasColor,
-    cursor: 'pointer'
   },
   bottom: theme.mixins.gutters({
     paddingTop: 16,
@@ -55,8 +55,6 @@ const styles = theme => ({
 class App extends React.Component {
   state = {
     user_info: null,
-    open_avatar_menu: false,
-    anchorEl: null,
     bottom_nav_value: 1,
   };
   
@@ -90,10 +88,6 @@ class App extends React.Component {
     this.sign_in_dialog.show();
   }
   
-  handleClickAvatar = (event) => {
-    this.setState({ openAvatarMenu: true, anchorEl: event.currentTarget });
-  };
-  
   handleChangeNav = (event, value) => {
     this.setState({ bottom_nav_value: value });
   };
@@ -103,40 +97,44 @@ class App extends React.Component {
     
     const signinButton = !this.state.user_info ?
       <Button color="inherit" onClick={this.handleClickSignIn}>
-        {'Connexion'}
+        Connexion
       </Button> :
-      <Avatar className={classes.avatar} src={this.state.user_info.picture} alt={this.state.user_info.displayName} onClick={this.handleClickAvatar}>
-        {this.state.user_info.picture ? '' : <FaceIcon /> }
-      </Avatar>
+      <AvatarMenu user_info={this.state.user_info} />
       ;
     
     const progressionPanel = !this.state.user_info ?
       <SignUpPanel /> :
-      <ProgressionPanel />
+      <ProgressionPanel user_id={this.state.user_info.id} />
       ;
     const challengePanel = !this.state.user_info ?
       <SignUpPanel /> :
       <ChallengePanel user={this.state.user_info} />
       ;
     const buddiesPanel = <BuddiesPanel />;
-      
-    return (
-      <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="display1" color="inherit" className={classes.flex}>
-            go-climbing
-          </Typography>
-          {signinButton}
-        </Toolbar>
-      </AppBar>
-      
-      {this.state.bottom_nav_value === 0 && progressionPanel}
-      {this.state.bottom_nav_value === 1 && challengePanel}
-      {this.state.bottom_nav_value === 2 && buddiesPanel}
-      
-      <SignInDialog innerRef={instance => { this.sign_in_dialog = instance; }}/>
-      
+    
+    const ShowUser = (props) => {
+      this.state.bottom_nav_value = 0;
+      return <div>
+          <Button variant="flat" color="primary" onClick={props.history.goBack}>
+            <KeyboardArrowLeftIcon />
+            Retour
+          </Button>
+          <ProgressionPanel user_id={props.match.params.id}/>
+        </div>
+        ;
+    };
+    
+    const ShowProfile = (props) => {
+      this.state.open_avatar_menu = false;
+      if (this.state.user_info) {
+        return <ProfilePanel user_id={this.state.user_info.id} />
+        ;
+      } else {
+        return <div/>
+      }
+    };
+    
+    const bottomNav = 
       <BottomNavigation
         value={this.state.bottom_nav_value}
         onChange={this.handleChangeNav}
@@ -147,9 +145,39 @@ class App extends React.Component {
         <BottomNavigationAction label="Challenge" icon={<ViewListIcon />} />
         <BottomNavigationAction label="Buddies" icon={<PeopleIcon />} />
       </BottomNavigation>
-
+      ;
+    
+    const MainComponent = () => {
+      switch(this.state.bottom_nav_value) {
+        case  0: return <div>{progressionPanel} {bottomNav}</div>;
+        case  2: return <div>{buddiesPanel} {bottomNav}</div>;
+        default: return <div>{challengePanel} {bottomNav}</div>;
+      }
+    };
+    
+    return (
+      <div>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="display1" color="inherit" className={classes.flex}>
+              go-climbing
+            </Typography>
+            {signinButton}
+          </Toolbar>
+        </AppBar>
+        
+        <Router>
+          <Switch>
+            <Route path='/profile' component={ShowProfile} />
+            <Route path='/user/:id' component={ShowUser} />
+            <Route component={MainComponent} />
+          </Switch>
+        </Router>
+        
+        <SignInDialog innerRef={instance => {this.sign_in_dialog = instance}}/>
+      
       </div>
-    )
+    );
   }
 }
 

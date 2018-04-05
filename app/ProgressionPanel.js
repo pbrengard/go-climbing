@@ -27,12 +27,14 @@ class ProgressionPanel extends React.Component {
   
 
   render() {
-    const { classes } = this.props;
+    const { classes, user_id } = this.props;
+    
+    console.log(user_id);
     
     return (
         <Paper className={classes.panel} elevation={4}>
           <Typography type="headline" component="h3">
-            This is a sheet of paper.
+            {user_id}
           </Typography>
           <Typography component="p">
             Paper can be used to build surface or other elements for your application.

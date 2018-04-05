@@ -87,6 +87,8 @@ class BuddiesPanel extends React.Component {
   render() {
     const { classes } = this.props;
     
+    let n_events = 0;
+    
     return (
       <Grid container spacing={24} className={classes.grid}>
         <Grid item xs>
@@ -137,7 +139,7 @@ class BuddiesPanel extends React.Component {
               <TableBody>
                 {this.state.latest_events.map(n => {
                   return (
-                    <TableRow key={n.id}>
+                    <TableRow key={n_events++}>
                       <TableCell>
                         <Chip avatar={
                           <Avatar src={n.picture} alt={n.displayName} >

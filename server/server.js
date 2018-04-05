@@ -113,6 +113,7 @@ app.get('/auth/userinfo', isLoggedIn, function(req, res) {
       return res.send({result:'error', error: {message:'no session'}});
     } else {
       res.send({result:'ok', data: {
+            id: req.user.id,
             displayName: req.user.displayName,
             picture: req.user.picture,
             is_admin: true,//req.user.is_admin,
